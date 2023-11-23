@@ -2,6 +2,7 @@
 // panoramaMFCDlg.cpp: 구현 파일
 //
 
+#include<opencv2/opencv.hpp>
 #include "pch.h"
 #include "framework.h"
 #include "panoramaMFC.h"
@@ -65,6 +66,11 @@ BEGIN_MESSAGE_MAP(CpanoramaMFCDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON_LEFT_IMAGE, &CpanoramaMFCDlg::OnBnClickedButtonLeftImage)
+	ON_BN_CLICKED(IDC_BUTTON_CENTER_IMAGE, &CpanoramaMFCDlg::OnBnClickedButtonCenterImage)
+	ON_BN_CLICKED(IDC_BUTTON_RIGHT_IMAGE, &CpanoramaMFCDlg::OnBnClickedButtonRightImage)
+	ON_BN_CLICKED(IDC_BUTTON_STITCH, &CpanoramaMFCDlg::OnBnClickedButtonStitch)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CpanoramaMFCDlg::OnBnClickedButtonSave)
 END_MESSAGE_MAP()
 
 
@@ -153,3 +159,36 @@ HCURSOR CpanoramaMFCDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+
+
+
+void CpanoramaMFCDlg::OnBnClickedButtonLeftImage()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CpanoramaMFCDlg::OnBnClickedButtonCenterImage()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CpanoramaMFCDlg::OnBnClickedButtonRightImage()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CpanoramaMFCDlg::OnBnClickedButtonStitch()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CpanoramaMFCDlg::OnBnClickedButtonSave()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}

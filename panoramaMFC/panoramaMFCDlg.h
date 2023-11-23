@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include<opencv2/opencv.hpp>
 
 // CpanoramaMFCDlg 대화 상자
 class CpanoramaMFCDlg : public CDialogEx
@@ -25,10 +26,21 @@ public:
 protected:
 	HICON m_hIcon;
 
+	cv::Mat LeftImage, CenterImage, RightImage;
+
+
 	// 생성된 메시지 맵 함수
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	CStatic LeftDisplay, CenterDisplay, RightDisplay;
+
+	afx_msg void OnBnClickedButtonLeftImage();
+	afx_msg void OnBnClickedButtonCenterImage();
+	afx_msg void OnBnClickedButtonRightImage();
+	afx_msg void OnBnClickedButtonStitch();
+	afx_msg void OnBnClickedButtonSave();
 };
