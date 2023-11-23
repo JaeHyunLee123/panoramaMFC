@@ -36,7 +36,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	CStatic LeftDisplay, CenterDisplay, RightDisplay;
+	CStatic LeftControl, CenterControl, RightControl;
 
 	afx_msg void OnBnClickedButtonLeftImage();
 	afx_msg void OnBnClickedButtonCenterImage();

@@ -60,6 +60,9 @@ CpanoramaMFCDlg::CpanoramaMFCDlg(CWnd* pParent /*=nullptr*/)
 void CpanoramaMFCDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_STATIC_LEFT_IMAGE, LeftControl);
+	DDX_Control(pDX, IDC_STATIC_CENTER_IMAGE, CenterControl);
+	DDX_Control(pDX, IDC_STATIC_RIGHT_IMAGE, RightControl);
 }
 
 BEGIN_MESSAGE_MAP(CpanoramaMFCDlg, CDialogEx)
