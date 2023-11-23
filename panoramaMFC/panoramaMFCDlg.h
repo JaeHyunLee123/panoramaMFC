@@ -38,9 +38,6 @@ protected:
 public:
 	CStatic LeftControl, CenterControl, RightControl;
 
-	afx_msg void OnBnClickedButtonLeftImage();
-	afx_msg void OnBnClickedButtonCenterImage();
-	afx_msg void OnBnClickedButtonRightImage();
+
 	afx_msg void OnBnClickedButtonStitch();
-	afx_msg void OnBnClickedButtonSave();
 };
