@@ -2,7 +2,9 @@
 // panoramaMFCDlg.cpp: 구현 파일
 //
 
-#include<opencv2/opencv.hpp>
+#include <opencv2/opencv.hpp>
+#include <string>
+#include <afx.h>
 #include "pch.h"
 #include "framework.h"
 #include "panoramaMFC.h"
@@ -70,6 +72,9 @@ BEGIN_MESSAGE_MAP(CpanoramaMFCDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_STITCH, &CpanoramaMFCDlg::OnBnClickedButtonStitch)
+	ON_COMMAND(ID_FILEOPEN_LEFT_IMAGE, &CpanoramaMFCDlg::OnFileopenLeftImage)
+	ON_COMMAND(ID_FILEOPEN_CENTER_IMAGE, &CpanoramaMFCDlg::OnFileopenCenterImage)
+	ON_COMMAND(ID_FILEOPEN_RIGHT_IMAGE, &CpanoramaMFCDlg::OnFileopenRightImage)
 END_MESSAGE_MAP()
 
 
@@ -164,5 +169,52 @@ void CpanoramaMFCDlg::OnBnClickedButtonStitch()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
+void CpanoramaMFCDlg::OnFileopenLeftImage()
+{
+	CFileDialog dlg(TRUE);
+	if (dlg.DoModal() == IDOK) {
+		//파일 확장자 확인
+		CString fileExtention = dlg.GetFileExt();
+		if (!(fileExtention == "png" || fileExtention == "PNG" || fileExtention == "jpg" || fileExtention == "JPG")) {
+			MessageBox((LPCTSTR) "Please open png or jpg file");
+		}
+
+		CString cstr = dlg.GetPathName();
+		const char* pathname = (LPCTSTR)cstr;
+		LeftImage = cv::imread(pathname);
+	}
+}
 
 
+void CpanoramaMFCDlg::OnFileopenCenterImage()
+{
+	CFileDialog dlg(TRUE);
+	if (dlg.DoModal() == IDOK) {
+		//파일 확장자 확인
+		CString fileExtention = dlg.GetFileExt();
+		if (!(fileExtention == "png" || fileExtention == "PNG" || fileExtention == "jpg" || fileExtention == "JPG")) {
+			MessageBox((LPCTSTR)"Please open png or jpg file");
+		}
+
+		CString cstr = dlg.GetPathName();
+		const char* pathname = (LPCTSTR)cstr;
+		CenterImage = cv::imread(pathname);
+	}
+}
+
+
+void CpanoramaMFCDlg::OnFileopenRightImage()
+{
+	CFileDialog dlg(TRUE);
+	if (dlg.DoModal() == IDOK) {
+		//파일 확장자 확인
+		CString fileExtention = dlg.GetFileExt();
+		if (!(fileExtention == "png" || fileExtention == "PNG" || fileExtention == "jpg" || fileExtention == "JPG")) {
+			MessageBox((LPCTSTR)"Please open png or jpg file");
+		}
+
+		CString cstr = dlg.GetPathName();
+		const char* pathname = (LPCTSTR)cstr;
+		RightImage = cv::imread(pathname);
+	}
+}

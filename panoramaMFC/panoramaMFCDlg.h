@@ -6,6 +6,13 @@
 
 #include<opencv2/opencv.hpp>
 
+enum IMAGE_TYPE {
+	LEFT,
+	CENTER,
+	RIGHT,
+	PANORAMA
+};
+
 // CpanoramaMFCDlg 대화 상자
 class CpanoramaMFCDlg : public CDialogEx
 {
@@ -35,9 +42,14 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+	
 public:
 	CStatic LeftControl, CenterControl, RightControl;
 
 
 	afx_msg void OnBnClickedButtonStitch();
+	afx_msg void OnFileopenLeftImage();
+	afx_msg void OnFileopenCenterImage();
+	afx_msg void OnFileopenRightImage();
 };
