@@ -176,12 +176,14 @@ void CpanoramaMFCDlg::OnFileopenLeftImage()
 		//파일 확장자 확인
 		CString fileExtention = dlg.GetFileExt();
 		if (!(fileExtention == "png" || fileExtention == "PNG" || fileExtention == "jpg" || fileExtention == "JPG")) {
-			MessageBox((LPCTSTR) "Please open png or jpg file");
+			MessageBox((LPCTSTR)"Please open png or jpg file");
 		}
 
 		CString cstr = dlg.GetPathName();
 		const char* pathname = (LPCTSTR)cstr;
 		LeftImage = cv::imread(pathname);
+
+		DisplayImage(LeftImage, LEFT);
 	}
 }
 
@@ -199,6 +201,8 @@ void CpanoramaMFCDlg::OnFileopenCenterImage()
 		CString cstr = dlg.GetPathName();
 		const char* pathname = (LPCTSTR)cstr;
 		CenterImage = cv::imread(pathname);
+
+		DisplayImage(CenterImage, CENTER);
 	}
 }
 
@@ -216,5 +220,70 @@ void CpanoramaMFCDlg::OnFileopenRightImage()
 		CString cstr = dlg.GetPathName();
 		const char* pathname = (LPCTSTR)cstr;
 		RightImage = cv::imread(pathname);
+
+		DisplayImage(RightImage, RIGHT);
 	}
+}
+
+void CpanoramaMFCDlg::DisplayImage(cv::Mat image, IMAGE_TYPE imageType) {
+	CImage mfcImage;
+	cv::Mat modifiedImage;
+	cv::flip(image, modifiedImage, 0);
+
+	if (imageType == LEFT) {
+		GetDlgItem(IDC_STATIC_LEFT_IMAGE)->GetWindowRect(rect);
+		ScreenToClient(rect);
+		m_pDC = LeftControl.GetDC();
+		LeftControl.GetClientRect(&rect);
+
+	}
+	else if (imageType == CENTER) {
+		GetDlgItem(IDC_STATIC_CENTER_IMAGE)->GetWindowRect(rect);
+		ScreenToClient(rect);
+		m_pDC = CenterControl.GetDC();
+		CenterControl.GetClientRect(&rect);
+	}
+	else if (imageType == RIGHT) {
+		GetDlgItem(IDC_STATIC_RIGHT_IMAGE)->GetWindowRect(rect);
+		ScreenToClient(rect);
+		m_pDC = RightControl.GetDC();
+		RightControl.GetClientRect(&rect);
+	}
+	else {//panorama
+		GetDlgItem(IDC_STATIC_PANORAMA_IMAGE)->GetWindowRect(rect);
+		ScreenToClient(rect);
+		m_pDC = PanoramaControl.GetDC();
+		PanoramaControl.GetClientRect(&rect);
+	}
+
+	ResizeImage(modifiedImage, modifiedImage, rect);
+	DisplayBitmap(m_pDC, rect, modifiedImage);
+}
+
+void CpanoramaMFCDlg::ResizeImage(cv::Mat src, cv::Mat& dest, CRect rect) {
+	int newWidth = src.cols * (rect.Height() / (double)src.rows);
+	int newHeight = rect.Height();
+	if (newWidth > rect.Width()) {
+		newWidth = rect.Width();
+		newHeight = src.rows * (rect.Width() / (double)src.cols);
+	}
+	cv::resize(src, dest, cv::Size(newWidth, newHeight));
+}
+
+void CpanoramaMFCDlg::DisplayBitmap(CDC* pDC, CRect rect, cv::Mat displayImage) {
+	BITMAPINFO bitmapInfo;
+	bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bitmapInfo.bmiHeader.biPlanes = 1;
+	bitmapInfo.bmiHeader.biCompression = BI_RGB;
+	bitmapInfo.bmiHeader.biXPelsPerMeter = 0;
+	bitmapInfo.bmiHeader.biYPelsPerMeter = 0;
+	bitmapInfo.bmiHeader.biClrUsed = 0;
+	bitmapInfo.bmiHeader.biClrImportant = 0;
+	bitmapInfo.bmiHeader.biSizeImage = 0;
+	bitmapInfo.bmiHeader.biWidth = displayImage.cols;
+	bitmapInfo.bmiHeader.biHeight = displayImage.rows;
+
+	bitmapInfo.bmiHeader.biBitCount = 3 * 8; // 채널 수(rgb) * 깊이(8bit)
+	pDC->SetStretchBltMode(COLORONCOLOR);
+	::StretchDIBits(pDC->GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, displayImage.cols, displayImage.rows, displayImage.data, &bitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 }

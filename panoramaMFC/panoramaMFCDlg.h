@@ -33,23 +33,27 @@ public:
 protected:
 	HICON m_hIcon;
 
-	cv::Mat LeftImage, CenterImage, RightImage;
-
+	cv::Mat LeftImage, CenterImage, RightImage, PanoramaImage;
 
 	// 생성된 메시지 맵 함수
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
-
+	DECLARE_MESSAGE_MAP();
 	
 public:
-	CStatic LeftControl, CenterControl, RightControl;
+	CStatic LeftControl, CenterControl, RightControl, PanoramaControl;
+	CRect rect;
+	CDC* m_pDC;
 
 
 	afx_msg void OnBnClickedButtonStitch();
 	afx_msg void OnFileopenLeftImage();
 	afx_msg void OnFileopenCenterImage();
 	afx_msg void OnFileopenRightImage();
+
+	void DisplayImage(cv::Mat image, IMAGE_TYPE imageType);
+	void DisplayBitmap(CDC* pDC, CRect rect, cv::Mat displayImage);
+	void ResizeImage(cv::Mat src, cv::Mat& dest, CRect rect);
 };
