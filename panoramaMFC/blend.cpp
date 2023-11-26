@@ -6,7 +6,7 @@
 using namespace std;
 using namespace cv;
 
-namespace ljh {
+namespace blend {
 	vector<RGB> blendRow(vector<RGB> input, int center, int blendingArea, int errorRange) {
 		vector<RGB> result(input);
 

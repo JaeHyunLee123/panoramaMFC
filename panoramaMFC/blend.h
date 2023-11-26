@@ -6,7 +6,7 @@
 using namespace cv;
 using namespace std;
 
-namespace ljh {
+namespace blend {
 	struct RGB {
 		int red;
 		int green;
