@@ -33,12 +33,6 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="blend.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="stitch.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="panoramaMFC.cpp">
@@ -48,12 +42,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="blend.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="stitch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
