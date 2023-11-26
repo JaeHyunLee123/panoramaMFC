@@ -190,10 +190,12 @@ void CpanoramaMFCDlg::OnBnClickedButtonStitch()
 	newCol = (double)result.cols / (double)result.rows * fixedRow;
 	resize(result, result, Size(newCol, fixedRow));
 
+	PanoramaImage = result;
+
+	DisplayImage(PanoramaImage, PANORAMA);
 
 	imshow("result", result);
 	waitKey(0);
-
 }
 
 void CpanoramaMFCDlg::OnFileopenLeftImage()
