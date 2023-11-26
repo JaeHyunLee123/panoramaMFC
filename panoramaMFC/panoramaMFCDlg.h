@@ -34,6 +34,8 @@ protected:
 	HICON m_hIcon;
 
 	cv::Mat LeftImage, CenterImage, RightImage, PanoramaImage;
+	cv::Mat stitch_two_image(cv::Mat original_image, cv::Mat object_image);
+	bool compareX(const cv::Point& p1, const cv::Point& p2);
 
 	// 생성된 메시지 맵 함수
 	virtual BOOL OnInitDialog();
