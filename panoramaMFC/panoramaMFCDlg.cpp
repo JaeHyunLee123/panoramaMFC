@@ -167,6 +167,12 @@ HCURSOR CpanoramaMFCDlg::OnQueryDragIcon()
 void CpanoramaMFCDlg::OnBnClickedButtonStitch()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	if (!(LeftImage.cols == 0 || CenterImage.cols == 0 || RightImage.cols == 0)) {
+		MessageBox((LPCTSTR)"Please three images");
+		return;
+	}
+
+
 }
 
 void CpanoramaMFCDlg::OnFileopenLeftImage()
@@ -215,6 +221,7 @@ void CpanoramaMFCDlg::OnFileopenRightImage()
 		CString fileExtention = dlg.GetFileExt();
 		if (!(fileExtention == "png" || fileExtention == "PNG" || fileExtention == "jpg" || fileExtention == "JPG")) {
 			MessageBox((LPCTSTR)"Please open png or jpg file");
+			return;
 		}
 
 		CString cstr = dlg.GetPathName();
@@ -268,6 +275,7 @@ void CpanoramaMFCDlg::ResizeImage(cv::Mat src, cv::Mat& dest, CRect rect) {
 		newHeight = src.rows * (rect.Width() / (double)src.cols);
 	}
 	cv::resize(src, dest, cv::Size(newWidth, newHeight));
+
 }
 
 void CpanoramaMFCDlg::DisplayBitmap(CDC* pDC, CRect rect, cv::Mat displayImage) {
@@ -285,5 +293,5 @@ void CpanoramaMFCDlg::DisplayBitmap(CDC* pDC, CRect rect, cv::Mat displayImage) 
 
 	bitmapInfo.bmiHeader.biBitCount = 3 * 8; // 채널 수(rgb) * 깊이(8bit)
 	pDC->SetStretchBltMode(COLORONCOLOR);
-	::StretchDIBits(pDC->GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, displayImage.cols, displayImage.rows, displayImage.data, &bitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+	StretchDIBits(pDC->GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, displayImage.cols, displayImage.rows, displayImage.data, &bitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 }

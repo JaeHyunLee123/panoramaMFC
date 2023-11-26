@@ -49,6 +49,7 @@ public:
 
 
 	afx_msg void OnBnClickedButtonStitch();
+
 	afx_msg void OnFileopenLeftImage();
 	afx_msg void OnFileopenCenterImage();
 	afx_msg void OnFileopenRightImage();

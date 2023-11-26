@@ -186,6 +186,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="blend.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="panoramaMFC.h" />
     <ClInclude Include="panoramaMFCDlg.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="blend.cpp" />
     <ClCompile Include="panoramaMFC.cpp" />
     <ClCompile Include="panoramaMFCDlg.cpp" />
     <ClCompile Include="pch.cpp">
