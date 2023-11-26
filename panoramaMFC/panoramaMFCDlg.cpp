@@ -567,6 +567,6 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 	}
 
 	//blending 수행
-	result = ljh::blendImage(result, center, 20, 2);
+	result = ljh::blendImage(result, center, result.rows / 2, 2);
 	return result;
 }
