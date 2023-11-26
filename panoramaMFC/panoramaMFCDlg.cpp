@@ -3,8 +3,10 @@
 //
 
 #include <opencv2/opencv.hpp>
+#include <iostream>
 #include <cmath>
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <afx.h>
 #include "pch.h"
@@ -172,7 +174,7 @@ HCURSOR CpanoramaMFCDlg::OnQueryDragIcon()
 void CpanoramaMFCDlg::OnBnClickedButtonStitch()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	if (!(LeftImage.cols == 0 || CenterImage.cols == 0 || RightImage.cols == 0)) {
+	if (LeftImage.cols == 0 || CenterImage.cols == 0 || RightImage.cols == 0) {
 		MessageBox((LPCTSTR)"Please open three images");
 		return;
 	}
@@ -660,7 +662,7 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 	int contoursIndex = 0;
 	for (contoursIndex = 0; contoursIndex < approxContours.size(); contoursIndex++) {
 		if (approxContours[contoursIndex].size() == 4) {
-			sort(approxContours[contoursIndex].begin(), approxContours[contoursIndex].end(), compareX);
+			std::sort(approxContours[contoursIndex].begin(), approxContours[contoursIndex].end(), compareX);
 			leftMinPoint = approxContours[contoursIndex][0];
 			leftMaxPoint = approxContours[contoursIndex][1];
 			rightMinPoint = approxContours[contoursIndex][2];
@@ -746,4 +748,5 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 	result = blendImage(result, center, result.rows / 2, 2);
 	return result;
 }
-bool CpanoramaMFCDlg::compareX(const Point& p1, const Point& p2) { return p1.x < p2.x; }
+
+bool compareX(const Point& p1, const Point& p2) { return p1.x < p2.x; }

@@ -60,15 +60,7 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 
-	//stitching 알고리즘 함수
-	Mat blendImage(Mat image, vector<int> center, int blendingArea, int errorRange);
-	vector<RGB> blendRow(vector<RGB> input, int center, int blendingArea, int errorRange);
-	RGB getRGB(Mat image, int col, int row);
-	void putRGB(Mat& dest, RGB rgb, int col, int row);
-	RGB hsi2rgb(HSI input);
-	HSI rgb2hsi(RGB input);
-	Mat stitch_two_image(Mat original_image, Mat object_image);
-	bool compareX(const Point& p1, const Point& p2);
+	
 	
 public:
 	CStatic LeftControl, CenterControl, RightControl, PanoramaControl;
@@ -83,4 +75,15 @@ public:
 	void DisplayImage(cv::Mat image, IMAGE_TYPE imageType);
 	void DisplayBitmap(CDC* pDC, CRect rect, cv::Mat displayImage);
 	void ResizeImage(cv::Mat src, cv::Mat& dest, CRect rect);
+
+	//stitching 알고리즘 함수
+	Mat blendImage(Mat image, vector<int> center, int blendingArea, int errorRange);
+	vector<RGB> blendRow(vector<RGB> input, int center, int blendingArea, int errorRange);
+	RGB getRGB(Mat image, int col, int row);
+	void putRGB(Mat& dest, RGB rgb, int col, int row);
+	RGB hsi2rgb(HSI input);
+	HSI rgb2hsi(RGB input);
+	Mat stitch_two_image(Mat original_image, Mat object_image);
+	
 };
+bool compareX(const Point& p1, const Point& p2);
