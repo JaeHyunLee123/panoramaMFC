@@ -172,10 +172,27 @@ void CpanoramaMFCDlg::OnBnClickedButtonStitch()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	if (!(LeftImage.cols == 0 || CenterImage.cols == 0 || RightImage.cols == 0)) {
-		MessageBox((LPCTSTR)"Please three images");
+		MessageBox((LPCTSTR)"Please open three images");
 		return;
 	}
 
+	int newCol = 0;
+	double fixedRow = LeftImage.rows;
+
+	Mat result = stitch_two_image(CenterImage, RightImage);
+	newCol = (double)result.cols / (double)result.rows * fixedRow;
+	resize(result, result, Size(newCol, fixedRow));
+
+	flip(result, result, 1);
+	flip(LeftImage, LeftImage, 1);
+	result = stitch_two_image(result, LeftImage);
+	flip(result, result, 1);
+	newCol = (double)result.cols / (double)result.rows * fixedRow;
+	resize(result, result, Size(newCol, fixedRow));
+
+
+	imshow("result", result);
+	waitKey(0);
 
 }
 
