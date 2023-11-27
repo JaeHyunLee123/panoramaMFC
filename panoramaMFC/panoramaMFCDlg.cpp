@@ -3,8 +3,10 @@
 //
 
 #include <opencv2/opencv.hpp>
+#include <iostream>
 #include <cmath>
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <afx.h>
 #include "pch.h"
@@ -70,6 +72,7 @@ void CpanoramaMFCDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_LEFT_IMAGE, LeftControl);
 	DDX_Control(pDX, IDC_STATIC_CENTER_IMAGE, CenterControl);
 	DDX_Control(pDX, IDC_STATIC_RIGHT_IMAGE, RightControl);
+	DDX_Control(pDX, IDC_STATIC_PANORAMA_IMAGE, PanoramaControl);
 }
 
 BEGIN_MESSAGE_MAP(CpanoramaMFCDlg, CDialogEx)
@@ -80,6 +83,7 @@ BEGIN_MESSAGE_MAP(CpanoramaMFCDlg, CDialogEx)
 	ON_COMMAND(ID_FILEOPEN_LEFT_IMAGE, &CpanoramaMFCDlg::OnFileopenLeftImage)
 	ON_COMMAND(ID_FILEOPEN_CENTER_IMAGE, &CpanoramaMFCDlg::OnFileopenCenterImage)
 	ON_COMMAND(ID_FILEOPEN_RIGHT_IMAGE, &CpanoramaMFCDlg::OnFileopenRightImage)
+	ON_COMMAND(ID_FILE_FILESAVE, &CpanoramaMFCDlg::OnFilesave)
 END_MESSAGE_MAP()
 
 
@@ -172,10 +176,14 @@ HCURSOR CpanoramaMFCDlg::OnQueryDragIcon()
 void CpanoramaMFCDlg::OnBnClickedButtonStitch()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	if (!(LeftImage.cols == 0 || CenterImage.cols == 0 || RightImage.cols == 0)) {
+	if (LeftImage.cols == 0 || CenterImage.cols == 0 || RightImage.cols == 0) {
 		MessageBox((LPCTSTR)"Please open three images");
 		return;
 	}
+
+	resize(LeftImage, LeftImage, Size(0, 0), 0.5, 0.5, INTER_LINEAR);
+	resize(CenterImage, CenterImage, Size(0, 0), 0.5, 0.5, INTER_LINEAR);
+	resize(RightImage, RightImage, Size(0, 0), 0.5, 0.5, INTER_LINEAR);
 
 	int newCol = 0;
 	double fixedRow = LeftImage.rows;
@@ -323,9 +331,13 @@ void CpanoramaMFCDlg::DisplayBitmap(CDC* pDC, CRect rect, cv::Mat displayImage) 
 
 
 Mat CpanoramaMFCDlg::blendImage(Mat image, vector<int> center, int blendingArea, int errorRange) {
-	assert(image.rows == center.size());
+	int rows = image.rows;
+	int centerSize = center.size();
+	
+	assert(image.rows <= center.size());
 
 	Mat result = image.clone();
+	
 
 	for (int row = 0; row < image.rows; row++) {
 		//열에 있는 데이터를 vector에 저장한다
@@ -345,7 +357,12 @@ Mat CpanoramaMFCDlg::blendImage(Mat image, vector<int> center, int blendingArea,
 
 	return result;
 }
-vector<RGB> CpanoramaMFCDlg::blendRow(vector<RGB> input, int center, int blendingArea, int errorRange) {
+vector<RGB> CpanoramaMFCDlg::blendRow(vector<RGB> input, int center, int _blendingArea, int errorRange) {
+	int blendingArea = _blendingArea;
+
+	if (center - blendingArea / 2 < 0) blendingArea -= 2 * (center - blendingArea / 2) + 5;
+	if (center + blendingArea / 2 > input.size() - 1) blendingArea -= 2 * (center + blendingArea / 2 - (input.size() - 1)) + 5;
+
 	vector<RGB> result(input);
 
 	//오차 범위 내 처리
@@ -660,7 +677,7 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 	int contoursIndex = 0;
 	for (contoursIndex = 0; contoursIndex < approxContours.size(); contoursIndex++) {
 		if (approxContours[contoursIndex].size() == 4) {
-			sort(approxContours[contoursIndex].begin(), approxContours[contoursIndex].end(), compareX);
+			std::sort(approxContours[contoursIndex].begin(), approxContours[contoursIndex].end(), compareX);
 			leftMinPoint = approxContours[contoursIndex][0];
 			leftMaxPoint = approxContours[contoursIndex][1];
 			rightMinPoint = approxContours[contoursIndex][2];
@@ -702,18 +719,22 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 
 	//이미지를 자르기
 	//작은 범위로 자르기
-	int top, right;
+	int top, right, bottom;
 	if (isRightYMax) {
 		top = max(SHIFT, rightMinPoint.y);
+		bottom = min(SHIFT + originalCutImage.rows, rightMaxPoint.y);
 	}
 	else {
 		top = max(SHIFT, rightMaxPoint.y);
+		bottom = min(SHIFT + originalCutImage.rows, rightMinPoint.y);
 	}
 	right = min(rightMaxPoint.x, rightMinPoint.x);
 
+	int height = bottom - top;
+
 	//blending을 위한 경계선 벡터 생성
 	vector<int> center;
-	for (int i = top; i < top + original_image.rows; i++) {
+	for (int i = top; i < bottom; i++) {
 		for (int j = 0; j < object_on_original.cols; j++) {
 			//해당 점이 경계선 위에 있는 경우 값 넣기
 			if (pointPolygonTest(contours[contoursIndex], Point(j, i), false) == 0)
@@ -729,7 +750,7 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 	// 결과를 저장할 mat 생성 후 데이터 옮기기
 	//잘린 original과 object_on_original를 합쳐야 한다.
 	//분기문을 넣은 이유는 original_image.cols - originalCutImage.cols가 0이면 오류가 발생하기 때문이다.
-	Mat result = Mat::zeros(original_image.rows, original_image.cols - originalCutImage.cols + right, CV_8UC3);
+	Mat result = Mat::zeros(height, original_image.cols - originalCutImage.cols + right, CV_8UC3);
 
 	if (original_image.cols - originalCutImage.cols == 0) {
 		preCombineImg(Rect(0, top, right, result.rows)).
@@ -743,7 +764,43 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 	}
 
 	//blending 수행
-	result = blendImage(result, center, result.rows / 2, 2);
+	result = blendImage(result, center, result.rows / 4, 2);
 	return result;
 }
-bool CpanoramaMFCDlg::compareX(const Point& p1, const Point& p2) { return p1.x < p2.x; }
+
+bool compareX(const Point& p1, const Point& p2) { return p1.x < p2.x; }
+
+void CpanoramaMFCDlg::OnFilesave()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	// Create a CFileDialog object
+	CFileDialog fileDialog(FALSE, _T("jpg"), NULL, OFN_OVERWRITEPROMPT, _T("JPEG Files (*.jpg)|*.jpg|All Files (*.*)|*.*||"));
+
+	if (PanoramaImage.cols == 0) {
+		MessageBox((LPCTSTR)"Make panorama image first!");
+		return;
+	}
+
+	// Show the file dialog
+	if (fileDialog.DoModal() == IDOK) {
+		// Get the selected file path
+		CString filePath = fileDialog.GetPathName();
+
+		// Convert CString to std::string
+		//std::string filePathStr(CW2A(filePath.GetString()));
+
+		//CString cstr = dlg.GetPathName();
+		const char* pathname = (LPCTSTR)filePath;
+		
+
+		// Save the image to the selected file path
+		bool success = cv::imwrite(pathname, PanoramaImage);
+
+		if (success) {
+			AfxMessageBox(_T("Image saved successfully."));
+		}
+		else {
+			AfxMessageBox(_T("Error: Failed to save the image."));
+		}
+	}
+}
