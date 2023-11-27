@@ -714,18 +714,22 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 
 	//이미지를 자르기
 	//작은 범위로 자르기
-	int top, right;
+	int top, right, bottom;
 	if (isRightYMax) {
 		top = max(SHIFT, rightMinPoint.y);
+		bottom = min(SHIFT + originalCutImage.rows, rightMaxPoint.y);
 	}
 	else {
 		top = max(SHIFT, rightMaxPoint.y);
+		bottom = min(SHIFT + originalCutImage.rows, rightMinPoint.y);
 	}
 	right = min(rightMaxPoint.x, rightMinPoint.x);
 
+	int height = bottom - top;
+
 	//blending을 위한 경계선 벡터 생성
 	vector<int> center;
-	for (int i = top; i < top + original_image.rows; i++) {
+	for (int i = top; i < bottom; i++) {
 		for (int j = 0; j < object_on_original.cols; j++) {
 			//해당 점이 경계선 위에 있는 경우 값 넣기
 			if (pointPolygonTest(contours[contoursIndex], Point(j, i), false) == 0)
@@ -741,7 +745,7 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 	// 결과를 저장할 mat 생성 후 데이터 옮기기
 	//잘린 original과 object_on_original를 합쳐야 한다.
 	//분기문을 넣은 이유는 original_image.cols - originalCutImage.cols가 0이면 오류가 발생하기 때문이다.
-	Mat result = Mat::zeros(original_image.rows, original_image.cols - originalCutImage.cols + right, CV_8UC3);
+	Mat result = Mat::zeros(height, original_image.cols - originalCutImage.cols + right, CV_8UC3);
 
 	if (original_image.cols - originalCutImage.cols == 0) {
 		preCombineImg(Rect(0, top, right, result.rows)).
