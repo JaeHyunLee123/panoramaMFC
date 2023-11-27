@@ -179,6 +179,10 @@ void CpanoramaMFCDlg::OnBnClickedButtonStitch()
 		return;
 	}
 
+	resize(LeftImage, LeftImage, Size(0, 0), 0.5, 0.5, INTER_LINEAR);
+	resize(CenterImage, CenterImage, Size(0, 0), 0.5, 0.5, INTER_LINEAR);
+	resize(RightImage, RightImage, Size(0, 0), 0.5, 0.5, INTER_LINEAR);
+
 	int newCol = 0;
 	double fixedRow = LeftImage.rows;
 
@@ -325,12 +329,13 @@ void CpanoramaMFCDlg::DisplayBitmap(CDC* pDC, CRect rect, cv::Mat displayImage) 
 
 
 Mat CpanoramaMFCDlg::blendImage(Mat image, vector<int> center, int blendingArea, int errorRange) {
-	assert(image.rows == center.size());
+	assert(image.rows <= center.size());
 
 	Mat result = image.clone();
+	
 
 	for (int row = 0; row < image.rows; row++) {
-		//열에 있는 데이터를 vector에 저장한다
+		//행에 있는 데이터를 vector에 저장한다
 		vector<RGB> inputValues = {};
 		for (int col = 0; col < image.cols; col++) {
 			RGB temp = getRGB(image, col, row);
@@ -347,7 +352,12 @@ Mat CpanoramaMFCDlg::blendImage(Mat image, vector<int> center, int blendingArea,
 
 	return result;
 }
-vector<RGB> CpanoramaMFCDlg::blendRow(vector<RGB> input, int center, int blendingArea, int errorRange) {
+vector<RGB> CpanoramaMFCDlg::blendRow(vector<RGB> input, int center, int _blendingArea, int errorRange) {
+	int blendingArea = _blendingArea;
+
+	if (center - blendingArea / 2 < 0) blendingArea = center - blendingArea / 2;
+	if (center + blendingArea / 2 > input.size()) blendingArea = (center + blendingArea / 2) - input.size();
+
 	vector<RGB> result(input);
 
 	//오차 범위 내 처리

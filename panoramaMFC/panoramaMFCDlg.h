@@ -78,7 +78,7 @@ public:
 
 	//stitching 알고리즘 함수
 	Mat blendImage(Mat image, vector<int> center, int blendingArea, int errorRange);
-	vector<RGB> blendRow(vector<RGB> input, int center, int blendingArea, int errorRange);
+	vector<RGB> blendRow(vector<RGB> input, int center, int _blendingArea, int errorRange);
 	RGB getRGB(Mat image, int col, int row);
 	void putRGB(Mat& dest, RGB rgb, int col, int row);
 	RGB hsi2rgb(HSI input);
