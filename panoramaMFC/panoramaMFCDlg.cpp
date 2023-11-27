@@ -335,7 +335,7 @@ Mat CpanoramaMFCDlg::blendImage(Mat image, vector<int> center, int blendingArea,
 	
 
 	for (int row = 0; row < image.rows; row++) {
-		//행에 있는 데이터를 vector에 저장한다
+		//열에 있는 데이터를 vector에 저장한다
 		vector<RGB> inputValues = {};
 		for (int col = 0; col < image.cols; col++) {
 			RGB temp = getRGB(image, col, row);
@@ -355,8 +355,8 @@ Mat CpanoramaMFCDlg::blendImage(Mat image, vector<int> center, int blendingArea,
 vector<RGB> CpanoramaMFCDlg::blendRow(vector<RGB> input, int center, int _blendingArea, int errorRange) {
 	int blendingArea = _blendingArea;
 
-	if (center - blendingArea / 2 < 0) blendingArea = blendingArea / 2 + center;
-	if (center + blendingArea / 2 > input.size()) blendingArea = (center + blendingArea / 2) - input.size();
+	if (center - blendingArea / 2 < 0) blendingArea = blendingArea - 2 * (center - blendingArea / 2);
+	if (center + blendingArea / 2 > input.size() - 1) blendingArea = blendingArea - 2 * (center + blendingArea / 2 - (input.size() - 1));
 
 	vector<RGB> result(input);
 
