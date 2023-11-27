@@ -355,7 +355,7 @@ Mat CpanoramaMFCDlg::blendImage(Mat image, vector<int> center, int blendingArea,
 vector<RGB> CpanoramaMFCDlg::blendRow(vector<RGB> input, int center, int _blendingArea, int errorRange) {
 	int blendingArea = _blendingArea;
 
-	if (center - blendingArea / 2 < 0) blendingArea = center - blendingArea / 2;
+	if (center - blendingArea / 2 < 0) blendingArea = blendingArea / 2 + center;
 	if (center + blendingArea / 2 > input.size()) blendingArea = (center + blendingArea / 2) - input.size();
 
 	vector<RGB> result(input);
