@@ -72,6 +72,7 @@ void CpanoramaMFCDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_LEFT_IMAGE, LeftControl);
 	DDX_Control(pDX, IDC_STATIC_CENTER_IMAGE, CenterControl);
 	DDX_Control(pDX, IDC_STATIC_RIGHT_IMAGE, RightControl);
+	DDX_Control(pDX, IDC_STATIC_PANORAMA_IMAGE, PanoramaControl);
 }
 
 BEGIN_MESSAGE_MAP(CpanoramaMFCDlg, CDialogEx)
@@ -82,6 +83,7 @@ BEGIN_MESSAGE_MAP(CpanoramaMFCDlg, CDialogEx)
 	ON_COMMAND(ID_FILEOPEN_LEFT_IMAGE, &CpanoramaMFCDlg::OnFileopenLeftImage)
 	ON_COMMAND(ID_FILEOPEN_CENTER_IMAGE, &CpanoramaMFCDlg::OnFileopenCenterImage)
 	ON_COMMAND(ID_FILEOPEN_RIGHT_IMAGE, &CpanoramaMFCDlg::OnFileopenRightImage)
+	ON_COMMAND(ID_FILE_FILESAVE, &CpanoramaMFCDlg::OnFilesave)
 END_MESSAGE_MAP()
 
 
@@ -329,6 +331,9 @@ void CpanoramaMFCDlg::DisplayBitmap(CDC* pDC, CRect rect, cv::Mat displayImage) 
 
 
 Mat CpanoramaMFCDlg::blendImage(Mat image, vector<int> center, int blendingArea, int errorRange) {
+	int rows = image.rows;
+	int centerSize = center.size();
+	
 	assert(image.rows <= center.size());
 
 	Mat result = image.clone();
@@ -355,8 +360,8 @@ Mat CpanoramaMFCDlg::blendImage(Mat image, vector<int> center, int blendingArea,
 vector<RGB> CpanoramaMFCDlg::blendRow(vector<RGB> input, int center, int _blendingArea, int errorRange) {
 	int blendingArea = _blendingArea;
 
-	if (center - blendingArea / 2 < 0) blendingArea = blendingArea - 2 * (center - blendingArea / 2);
-	if (center + blendingArea / 2 > input.size() - 1) blendingArea = blendingArea - 2 * (center + blendingArea / 2 - (input.size() - 1));
+	if (center - blendingArea / 2 < 0) blendingArea -= 2 * (center - blendingArea / 2) + 5;
+	if (center + blendingArea / 2 > input.size() - 1) blendingArea -= 2 * (center + blendingArea / 2 - (input.size() - 1)) + 5;
 
 	vector<RGB> result(input);
 
@@ -759,8 +764,43 @@ Mat CpanoramaMFCDlg::stitch_two_image(Mat original_image, Mat object_image) {
 	}
 
 	//blending 수행
-	result = blendImage(result, center, result.rows / 2, 2);
+	result = blendImage(result, center, result.rows / 4, 2);
 	return result;
 }
 
 bool compareX(const Point& p1, const Point& p2) { return p1.x < p2.x; }
+
+void CpanoramaMFCDlg::OnFilesave()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	// Create a CFileDialog object
+	CFileDialog fileDialog(FALSE, _T("jpg"), NULL, OFN_OVERWRITEPROMPT, _T("JPEG Files (*.jpg)|*.jpg|All Files (*.*)|*.*||"));
+
+	if (PanoramaImage.cols == 0) {
+		MessageBox((LPCTSTR)"Make panorama image first!");
+		return;
+	}
+
+	// Show the file dialog
+	if (fileDialog.DoModal() == IDOK) {
+		// Get the selected file path
+		CString filePath = fileDialog.GetPathName();
+
+		// Convert CString to std::string
+		//std::string filePathStr(CW2A(filePath.GetString()));
+
+		//CString cstr = dlg.GetPathName();
+		const char* pathname = (LPCTSTR)filePath;
+		
+
+		// Save the image to the selected file path
+		bool success = cv::imwrite(pathname, PanoramaImage);
+
+		if (success) {
+			AfxMessageBox(_T("Image saved successfully."));
+		}
+		else {
+			AfxMessageBox(_T("Error: Failed to save the image."));
+		}
+	}
+}

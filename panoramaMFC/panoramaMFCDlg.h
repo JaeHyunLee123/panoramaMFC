@@ -85,5 +85,6 @@ public:
 	HSI rgb2hsi(RGB input);
 	Mat stitch_two_image(Mat original_image, Mat object_image);
 	
+	afx_msg void OnFilesave();
 };
 bool compareX(const Point& p1, const Point& p2);
